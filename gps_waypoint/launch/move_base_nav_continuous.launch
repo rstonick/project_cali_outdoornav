@@ -2,8 +2,9 @@
 
 <launch>
 
+<include file="$(find rover_autonav)/launch/localization_ecst_lab.launch" />
   <group ns="controller_1">
-  <node pkg="move_base" type="move_base" respawn="false" name="move_base" > <!--output="screen"-->
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" > 
     
     <rosparam file="$(find gps_waypoint)/param/costmap_common_params.yaml" command="load" ns="global_costmap" />
     <rosparam file="$(find gps_waypoint)/param/costmap_common_params.yaml" command="load" ns="local_costmap" />
@@ -16,16 +17,17 @@
     <param name="base_global_planner" type="string" value="navfn/NavfnROS" />
     <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS"/>
 
-    <remap from="odom" to="/gps_nav/odometry/filtered_map" />
-    <remap from="map" to="/gps_nav/map"/>
+    <remap from="odom" to="/gps_nav/odometry/map" />
+    <remap from="map" to="/gps_nav/filtered_map"/>
     <remap from="cmd_vel" to="/cmd_vel1" />
     <remap from="scan" to="/scan" />
+    <remap from="robot_footprint" to="/gps_nav/odom" />
 
   </node>
   </group>
 
   <group ns="controller_2">
-  <node pkg="move_base" type="move_base" respawn="false" name="move_base" > <!--output="screen"-->
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     
     <rosparam file="$(find gps_waypoint)/param/costmap_common_params.yaml" command="load" ns="global_costmap" />
     <rosparam file="$(find gps_waypoint)/param/costmap_common_params.yaml" command="load" ns="local_costmap" />

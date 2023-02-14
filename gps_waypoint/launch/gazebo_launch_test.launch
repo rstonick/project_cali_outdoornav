@@ -19,8 +19,8 @@
     <arg name="y" default="0.0"/>
     <arg name="z" default="0.1"/>
     <arg name="roll" default="0"/>
-	<arg name="pitch" default="0"/>
-	<arg name="yaw" default="0"/>
+	  <arg name="pitch" default="0"/>
+	  <arg name="yaw" default="0"/>
 
 
     <!-- Test Perception/manipulation Pipeline-->
@@ -36,8 +36,22 @@
           args="-urdf -param robot_description -model rover_autonav -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)"/>" />
 
 
+    <!-- JOINT STATE CONTROLLER -->
+    <rosparam file="$(find manipulation)/config/joint_state_controller.yaml" command="load"/>
 
-    
+    <!-- ARM CONTROLLER -->
+    <rosparam file="$(find manipulation)/config/arm_controller_scorbot.yaml" command="load"/>
+
+
+    <!--GRIPPER CONTROLLER-->
+    <rosparam file="$(find manipulation)/config/gripper_controller.yaml" command="load"/>
+    <param name="gripper_controller/joint" value="scorbot_pad1_joint"/>
+
+    <!-- Launch PIDs for Arm and Gripper Controller-->
+    <!-- <rosparam file="$(find manipulation)/config/arm_pids.yaml" command="load" /> -->
+    <rosparam file="$(find manipulation)/config/gazebo_controller.yaml" command="load" />
+
+
     <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
             <arg name="world_name" value="$(arg world_name)"/>
@@ -47,7 +61,16 @@
             <arg name="headless" value="false"/>
             <arg name="verbose" value="true"/>
     </include>
+    <!-- Controller Manager-->
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" output="screen" 
+    args="joint_state_controller scaled_pos_joint_traj_controller gripper_controller"/>
 
-  
+   
+
+      <!-- Trajectory controller GUI to control arm joints -->
+    <node name="arm_control_gui" pkg="rqt_joint_trajectory_controller" type="rqt_joint_trajectory_controller" respawn="false" output="screen"/>
+
+
+   
 
 </launch>
